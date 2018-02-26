@@ -1,0 +1,198 @@
+#!/usr/bin/env node
+/*
+ * decaffeinate suggestions:
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS205: Consider reworking code to avoid use of IIFEs
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+// vim:ft=coffee ts=2 sw=2 et :
+// -*- mode:coffee -*-
+
+const Hubot    = require('..');
+
+const Fs       = require('fs');
+const OptParse = require('optparse');
+const Path     = require('path');
+
+const Switches = [
+  [ "-a", "--adapter ADAPTER", "The Adapter to use" ],
+  [ "-c", "--create PATH",     "Create a deployable hubot" ],
+  [ "-d", "--disable-httpd",   "Disable the HTTP server" ],
+  [ "-h", "--help",            "Display the help information" ],
+  [ "-l", "--alias ALIAS",     "Enable replacing the robot's name with alias" ],
+  [ "-n", "--name NAME",       "The name of the robot in chat" ],
+  [ "-r", "--require PATH",    "Alternative scripts path" ],
+  [ "-t", "--config-check",    "Test hubot's config to make sure it won't fail at startup"],
+  [ "-v", "--version",         "Displays the version of hubot installed" ]
+];
+
+const Options = {
+  adapter:     process.env.HUBOT_ADAPTER || "shell",
+  alias:       process.env.HUBOT_ALIAS   || false,
+  create:      process.env.HUBOT_CREATE  || false,
+  enableHttpd: process.env.HUBOT_HTTPD   || true,
+  scripts:     process.env.HUBOT_SCRIPTS || [],
+  name:        process.env.HUBOT_NAME    || "Hubot",
+  path:        process.env.HUBOT_PATH    || ".",
+  configCheck: false
+};
+
+const Parser = new OptParse.OptionParser(Switches);
+Parser.banner = "Usage hubot [options]";
+
+Parser.on("adapter", (opt, value) => Options.adapter = value);
+
+Parser.on("create", function(opt, value) {
+  Options.path = value;
+  return Options.create = true;
+});
+
+Parser.on("disable-httpd", opt => Options.enableHttpd = false);
+
+Parser.on("help", function(opt, value) {
+  console.log(Parser.toString());
+  return process.exit(0);
+});
+
+Parser.on("alias", function(opt, value) {
+  if (!value) { value = '/'; }
+  return Options.alias = value;
+});
+
+Parser.on("name", (opt, value) => Options.name = value);
+
+Parser.on("require", (opt, value) => Options.scripts.push(value));
+
+Parser.on("config-check", opt => Options.configCheck = true);
+
+Parser.on("version", (opt, value) => Options.version = true);
+
+Parser.on((opt, value) => console.warn(`Unknown option: ${opt}`));
+
+Parser.parse(process.argv);
+
+if (process.platform !== "win32") {
+  process.on('SIGTERM', () => process.exit(0));
+}
+
+if (Options.create) {
+  console.error("'hubot --create' is deprecated. Use the yeoman generator instead:");
+  console.error("    npm install -g yo generator-hubot");
+  console.error(`    mkdir -p ${Options.path}`);
+  console.error(`    cd ${Options.path}`);
+  console.error("    yo hubot");
+  console.error("See https://github.com/github/hubot/blob/master/docs/index.md for more details on getting started.");
+  process.exit(1);
+
+} else {
+  const robot = Hubot.loadBot(undefined, Options.adapter, Options.enableHttpd, Options.name, Options.alias);
+
+  if (Options.version) {
+    console.log(robot.version);
+    process.exit(0);
+  }
+
+  const loadScripts = function() {
+    let scripts;
+    let scriptsPath = Path.resolve(".", "scripts");
+    robot.load(scriptsPath);
+
+    scriptsPath = Path.resolve(".", "src", "scripts");
+    robot.load(scriptsPath);
+
+    const hubotScripts = Path.resolve(".", "hubot-scripts.json");
+    if (Fs.existsSync(hubotScripts)) {
+      let hubotScriptsWarning;
+      const data = Fs.readFileSync(hubotScripts);
+      if (data.length > 0) {
+        try {
+          scripts = JSON.parse(data);
+          scriptsPath = Path.resolve("node_modules", "hubot-scripts", "src", "scripts");
+          robot.loadHubotScripts(scriptsPath, scripts);
+        } catch (error) {
+          const err = error;
+          robot.logger.error(`Error parsing JSON data from hubot-scripts.json: ${err}`);
+          process.exit(1);
+        }
+
+        hubotScriptsWarning = "Loading scripts from hubot-scripts.json is deprecated and " +
+          "will be removed in 3.0 (https://github.com/github/hubot-scripts/issues/1113) " +
+          "in favor of packages for each script.\n\n";
+
+        if (scripts.length === 0) {
+          hubotScriptsWarning += "Your hubot-scripts.json is empty, so you just need to remove it.";
+        } else {
+          const hubotScriptsReplacements = Path.resolve("node_modules", "hubot-scripts", "replacements.json");
+
+          if (Fs.existsSync(hubotScriptsReplacements)) {
+            hubotScriptsWarning += "The following scripts have known replacements. Follow the link for installation instructions, then remove it from hubot-scripts.json:\n";
+
+            const replacementsData = Fs.readFileSync(hubotScriptsReplacements);
+            const replacements = JSON.parse(replacementsData);
+            const scriptsWithoutReplacements = [];
+            for (var script of Array.from(scripts)) {
+              const replacement = replacements[script];
+              if (replacement) {
+                hubotScriptsWarning += `* ${script}: ${replacement}\n`;
+              } else {
+                scriptsWithoutReplacements.push(script);
+              }
+            }
+            hubotScriptsWarning += "\n";
+
+            if (scriptsWithoutReplacements.length > 0) {
+              hubotScriptsWarning += "The following scripts don't have (known) replacements. You can try searching https://www.npmjs.com/ or http://github.com/search or your favorite search engine. You can copy the script into your local scripts directory, or consider creating a new package to maintain yourself. If you find a replacement or create a package yourself, please post on https://github.com/github/hubot-scripts/issues/1641:\n";
+              for (script of Array.from(scriptsWithoutReplacements)) { hubotScriptsWarning += `* ${script}\n`; }
+
+              hubotScriptsWarning += "\nYou an also try updating hubot-scripts to get the latest list of replacements: npm install --save hubot-scripts@latest";
+            }
+          } else {
+              hubotScriptsWarning += "To get a list of recommended replacements, update your hubot-scripts: npm install --save hubot-scripts@latest";
+            }
+        }
+      }
+
+      robot.logger.warning(hubotScriptsWarning);
+    }
+
+    const externalScripts = Path.resolve(".", "external-scripts.json");
+    if (Fs.existsSync(externalScripts)) {
+      Fs.readFile(externalScripts, function(err, data) {
+        if (data.length > 0) {
+          try {
+            scripts = JSON.parse(data);
+          } catch (error1) {
+            err = error1;
+            console.error(`Error parsing JSON data from external-scripts.json: ${err}`);
+            process.exit(1);
+          }
+          return robot.loadExternalScripts(scripts);
+        }
+      });
+    }
+
+    return (() => {
+      const result = [];
+      for (let path of Array.from(Options.scripts)) {
+        if (path[0] === '/') {
+          scriptsPath = path;
+        } else {
+          scriptsPath = Path.resolve(".", path);
+        }
+        result.push(robot.load(scriptsPath));
+      }
+      return result;
+    })();
+  };
+
+  if (Options.configCheck) {
+    loadScripts();
+    console.log("OK");
+    process.exit(0);
+  }
+
+  robot.adapter.once('connected', loadScripts);
+
+  robot.run();
+}

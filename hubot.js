@@ -1,8 +1,6 @@
 /*
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
- * DS102: Remove unnecessary code created because of implicit returns
- * DS205: Consider reworking code to avoid use of IIFEs
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
 const fs       = require('fs');
@@ -24,17 +22,17 @@ module.exports = function (options = defaultOptions) {
   const robot = hubot.loadBot(undefined, options.adapter, options.enableHttpd, options.name, options.alias);
 
   const loadScripts = function() {
-    let scripts;
+    let scripts
     let scriptsPath
 
     robot.load(path.resolve('.', 'scripts'))
     robot.load(path.resolve('.', 'src', 'scripts'))
 
-    const hubotScripts = path.resolve(".", "hubot-scripts.json");
+    const hubotScripts = path.resolve('.', 'hubot-scripts.json')
     if (fs.existsSync(hubotScripts)) {
       let hubotScriptsWarning;
       const data = fs.readFileSync(hubotScripts);
-      if (data.length > 0) {
+      if (data.length) {
         try {
           scripts = JSON.parse(data);
           scriptsPath = path.resolve("node_modules", "hubot-scripts", "src", "scripts");
@@ -85,43 +83,30 @@ module.exports = function (options = defaultOptions) {
       robot.logger.warning(hubotScriptsWarning);
     }
 
-    const externalScripts = path.resolve(".", "external-scripts.json");
+    const externalScripts = path.resolve('.', 'external-scripts.json');
     if (fs.existsSync(externalScripts)) {
-      fs.readFile(externalScripts, function(err, data) {
-        if (data.length > 0) {
-          try {
-            scripts = JSON.parse(data);
-          } catch (error1) {
-            err = error1;
-            console.error(`Error parsing JSON data from external-scripts.json: ${err}`);
-            process.exit(1);
-          }
-          return robot.loadExternalScripts(scripts);
-        }
-      });
+      const data = fs.readFileSync(externalScripts)
+      if (data.length) {
+        const scripts = JSON.parse(data)
+        robot.loadExternalScripts(scripts)
+      }
     }
 
-    return (() => {
-      const result = [];
-      for (let scriptPath of Array.from(options.scripts)) {
-        if (scriptPath[0] === '/') {
-          scriptsPath = scriptPath;
-        } else {
-          scriptsPath = path.resolve(".", scriptPath);
-        }
-        result.push(robot.load(scriptsPath));
+    options.scripts.forEach((scriptPath) => {
+      if (scriptPath[0] !== '/') {
+        scriptsPath = path.resolve('.', scriptPath)
       }
-      return result;
-    })();
+      robot.load(scriptsPath)
+    })
   };
 
   return {
     start: () => {
-      robot.adapter.once('connected', loadScripts);
-      if (process.platform !== "win32") {
-        process.on('SIGTERM', () => process.exit(0));
+      robot.adapter.once('connected', loadScripts)
+      if (process.platform !== 'win32') {
+        process.on('SIGTERM', () => process.exit(0))
       }
-      robot.run();
+      robot.run()
     }
   }
 }

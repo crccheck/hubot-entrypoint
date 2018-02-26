@@ -11,7 +11,7 @@ const path     = require('path');
 require('coffee-script/register')
 const hubot    = require('hubot');
 
-const options = {
+const defaultOptions = {
   adapter:     process.env.HUBOT_ADAPTER || "shell",
   alias:       process.env.HUBOT_ALIAS   || false,
   enableHttpd: process.env.HUBOT_HTTPD   || true,
@@ -20,20 +20,15 @@ const options = {
   path:        process.env.HUBOT_PATH    || ".",
 };
 
-if (process.platform !== "win32") {
-  process.on('SIGTERM', () => process.exit(0));
-}
-
-if (true) {
+module.exports = function (options = defaultOptions) {
   const robot = hubot.loadBot(undefined, options.adapter, options.enableHttpd, options.name, options.alias);
 
   const loadScripts = function() {
     let scripts;
-    let scriptsPath = path.resolve(".", "scripts");
-    robot.load(scriptsPath);
+    let scriptsPath
 
-    scriptsPath = path.resolve(".", "src", "scripts");
-    robot.load(scriptsPath);
+    robot.load(path.resolve('.', 'scripts'))
+    robot.load(path.resolve('.', 'src', 'scripts'))
 
     const hubotScripts = path.resolve(".", "hubot-scripts.json");
     if (fs.existsSync(hubotScripts)) {
@@ -120,7 +115,13 @@ if (true) {
     })();
   };
 
-  robot.adapter.once('connected', loadScripts);
-
-  robot.run();
+  return {
+    start: () => {
+      robot.adapter.once('connected', loadScripts);
+      if (process.platform !== "win32") {
+        process.on('SIGTERM', () => process.exit(0));
+      }
+      robot.run();
+    }
+  }
 }

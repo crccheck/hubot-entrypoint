@@ -6,7 +6,7 @@
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
 
-const Hubot    = require('..');
+const Hubot    = require('hubot');
 
 const Fs       = require('fs');
 const Path     = require('path');

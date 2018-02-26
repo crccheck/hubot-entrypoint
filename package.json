@@ -8,5 +8,11 @@
   },
   "keywords": [],
   "author": "Chris Chang <c@crccheck.com> (http://crccheck.com/blog)",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "app-root-dir": "^1.0.2"
+  },
+  "devDependencies": {
+    "hubot": "^2.19.0"
+  }
 }

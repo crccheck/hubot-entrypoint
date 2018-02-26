@@ -23,7 +23,6 @@ const Switches = [
   [ "-n", "--name NAME",       "The name of the robot in chat" ],
   [ "-r", "--require PATH",    "Alternative scripts path" ],
   [ "-t", "--config-check",    "Test hubot's config to make sure it won't fail at startup"],
-  [ "-v", "--version",         "Displays the version of hubot installed" ]
 ];
 
 const Options = {
@@ -59,8 +58,6 @@ Parser.on("require", (opt, value) => Options.scripts.push(value));
 
 Parser.on("config-check", opt => Options.configCheck = true);
 
-Parser.on("version", (opt, value) => Options.version = true);
-
 Parser.on((opt, value) => console.warn(`Unknown option: ${opt}`));
 
 Parser.parse(process.argv);
@@ -71,11 +68,6 @@ if (process.platform !== "win32") {
 
 if (true) {
   const robot = Hubot.loadBot(undefined, Options.adapter, Options.enableHttpd, Options.name, Options.alias);
-
-  if (Options.version) {
-    console.log(robot.version);
-    process.exit(0);
-  }
 
   const loadScripts = function() {
     let scripts;

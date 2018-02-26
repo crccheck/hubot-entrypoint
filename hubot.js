@@ -17,7 +17,6 @@ const Path     = require('path');
 
 const Switches = [
   [ "-a", "--adapter ADAPTER", "The Adapter to use" ],
-  [ "-c", "--create PATH",     "Create a deployable hubot" ],
   [ "-d", "--disable-httpd",   "Disable the HTTP server" ],
   [ "-h", "--help",            "Display the help information" ],
   [ "-l", "--alias ALIAS",     "Enable replacing the robot's name with alias" ],
@@ -30,7 +29,6 @@ const Switches = [
 const Options = {
   adapter:     process.env.HUBOT_ADAPTER || "shell",
   alias:       process.env.HUBOT_ALIAS   || false,
-  create:      process.env.HUBOT_CREATE  || false,
   enableHttpd: process.env.HUBOT_HTTPD   || true,
   scripts:     process.env.HUBOT_SCRIPTS || [],
   name:        process.env.HUBOT_NAME    || "Hubot",
@@ -42,11 +40,6 @@ const Parser = new OptParse.OptionParser(Switches);
 Parser.banner = "Usage hubot [options]";
 
 Parser.on("adapter", (opt, value) => Options.adapter = value);
-
-Parser.on("create", function(opt, value) {
-  Options.path = value;
-  return Options.create = true;
-});
 
 Parser.on("disable-httpd", opt => Options.enableHttpd = false);
 
@@ -76,16 +69,7 @@ if (process.platform !== "win32") {
   process.on('SIGTERM', () => process.exit(0));
 }
 
-if (Options.create) {
-  console.error("'hubot --create' is deprecated. Use the yeoman generator instead:");
-  console.error("    npm install -g yo generator-hubot");
-  console.error(`    mkdir -p ${Options.path}`);
-  console.error(`    cd ${Options.path}`);
-  console.error("    yo hubot");
-  console.error("See https://github.com/github/hubot/blob/master/docs/index.md for more details on getting started.");
-  process.exit(1);
-
-} else {
+if (true) {
   const robot = Hubot.loadBot(undefined, Options.adapter, Options.enableHttpd, Options.name, Options.alias);
 
   if (Options.version) {

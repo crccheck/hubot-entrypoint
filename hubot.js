@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 /*
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
@@ -6,8 +5,6 @@
  * DS205: Consider reworking code to avoid use of IIFEs
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-// vim:ft=coffee ts=2 sw=2 et :
-// -*- mode:coffee -*-
 
 const Hubot    = require('..');
 
@@ -32,7 +29,6 @@ const Options = {
   scripts:     process.env.HUBOT_SCRIPTS || [],
   name:        process.env.HUBOT_NAME    || "Hubot",
   path:        process.env.HUBOT_PATH    || ".",
-  configCheck: false
 };
 
 const Parser = new OptParse.OptionParser(Switches);
@@ -55,8 +51,6 @@ Parser.on("alias", function(opt, value) {
 Parser.on("name", (opt, value) => Options.name = value);
 
 Parser.on("require", (opt, value) => Options.scripts.push(value));
-
-Parser.on("config-check", opt => Options.configCheck = true);
 
 Parser.on((opt, value) => console.warn(`Unknown option: ${opt}`));
 
@@ -161,12 +155,6 @@ if (true) {
       return result;
     })();
   };
-
-  if (Options.configCheck) {
-    loadScripts();
-    console.log("OK");
-    process.exit(0);
-  }
 
   robot.adapter.once('connected', loadScripts);
 

@@ -5,11 +5,11 @@
  * DS205: Consider reworking code to avoid use of IIFEs
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-
-const hubot    = require('hubot');
-
 const fs       = require('fs');
 const path     = require('path');
+
+require('coffee-script/register')
+const hubot    = require('hubot');
 
 const options = {
   adapter:     process.env.HUBOT_ADAPTER || "shell",

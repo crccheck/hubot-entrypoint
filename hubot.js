@@ -6,12 +6,12 @@
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
 
-const Hubot    = require('hubot');
+const hubot    = require('hubot');
 
-const Fs       = require('fs');
-const Path     = require('path');
+const fs       = require('fs');
+const path     = require('path');
 
-const Options = {
+const options = {
   adapter:     process.env.HUBOT_ADAPTER || "shell",
   alias:       process.env.HUBOT_ALIAS   || false,
   enableHttpd: process.env.HUBOT_HTTPD   || true,
@@ -25,24 +25,24 @@ if (process.platform !== "win32") {
 }
 
 if (true) {
-  const robot = Hubot.loadBot(undefined, Options.adapter, Options.enableHttpd, Options.name, Options.alias);
+  const robot = hubot.loadBot(undefined, options.adapter, options.enableHttpd, options.name, options.alias);
 
   const loadScripts = function() {
     let scripts;
-    let scriptsPath = Path.resolve(".", "scripts");
+    let scriptsPath = path.resolve(".", "scripts");
     robot.load(scriptsPath);
 
-    scriptsPath = Path.resolve(".", "src", "scripts");
+    scriptsPath = path.resolve(".", "src", "scripts");
     robot.load(scriptsPath);
 
-    const hubotScripts = Path.resolve(".", "hubot-scripts.json");
-    if (Fs.existsSync(hubotScripts)) {
+    const hubotScripts = path.resolve(".", "hubot-scripts.json");
+    if (fs.existsSync(hubotScripts)) {
       let hubotScriptsWarning;
-      const data = Fs.readFileSync(hubotScripts);
+      const data = fs.readFileSync(hubotScripts);
       if (data.length > 0) {
         try {
           scripts = JSON.parse(data);
-          scriptsPath = Path.resolve("node_modules", "hubot-scripts", "src", "scripts");
+          scriptsPath = path.resolve("node_modules", "hubot-scripts", "src", "scripts");
           robot.loadHubotScripts(scriptsPath, scripts);
         } catch (error) {
           const err = error;
@@ -57,12 +57,12 @@ if (true) {
         if (scripts.length === 0) {
           hubotScriptsWarning += "Your hubot-scripts.json is empty, so you just need to remove it.";
         } else {
-          const hubotScriptsReplacements = Path.resolve("node_modules", "hubot-scripts", "replacements.json");
+          const hubotScriptsReplacements = path.resolve("node_modules", "hubot-scripts", "replacements.json");
 
-          if (Fs.existsSync(hubotScriptsReplacements)) {
+          if (fs.existsSync(hubotScriptsReplacements)) {
             hubotScriptsWarning += "The following scripts have known replacements. Follow the link for installation instructions, then remove it from hubot-scripts.json:\n";
 
-            const replacementsData = Fs.readFileSync(hubotScriptsReplacements);
+            const replacementsData = fs.readFileSync(hubotScriptsReplacements);
             const replacements = JSON.parse(replacementsData);
             const scriptsWithoutReplacements = [];
             for (var script of Array.from(scripts)) {
@@ -90,9 +90,9 @@ if (true) {
       robot.logger.warning(hubotScriptsWarning);
     }
 
-    const externalScripts = Path.resolve(".", "external-scripts.json");
-    if (Fs.existsSync(externalScripts)) {
-      Fs.readFile(externalScripts, function(err, data) {
+    const externalScripts = path.resolve(".", "external-scripts.json");
+    if (fs.existsSync(externalScripts)) {
+      fs.readFile(externalScripts, function(err, data) {
         if (data.length > 0) {
           try {
             scripts = JSON.parse(data);
@@ -108,11 +108,11 @@ if (true) {
 
     return (() => {
       const result = [];
-      for (let path of Array.from(Options.scripts)) {
-        if (path[0] === '/') {
-          scriptsPath = path;
+      for (let scriptPath of Array.from(options.scripts)) {
+        if (scriptPath[0] === '/') {
+          scriptsPath = scriptPath;
         } else {
-          scriptsPath = Path.resolve(".", path);
+          scriptsPath = path.resolve(".", scriptPath);
         }
         result.push(robot.load(scriptsPath));
       }

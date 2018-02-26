@@ -9,18 +9,7 @@
 const Hubot    = require('..');
 
 const Fs       = require('fs');
-const OptParse = require('optparse');
 const Path     = require('path');
-
-const Switches = [
-  [ "-a", "--adapter ADAPTER", "The Adapter to use" ],
-  [ "-d", "--disable-httpd",   "Disable the HTTP server" ],
-  [ "-h", "--help",            "Display the help information" ],
-  [ "-l", "--alias ALIAS",     "Enable replacing the robot's name with alias" ],
-  [ "-n", "--name NAME",       "The name of the robot in chat" ],
-  [ "-r", "--require PATH",    "Alternative scripts path" ],
-  [ "-t", "--config-check",    "Test hubot's config to make sure it won't fail at startup"],
-];
 
 const Options = {
   adapter:     process.env.HUBOT_ADAPTER || "shell",
@@ -30,31 +19,6 @@ const Options = {
   name:        process.env.HUBOT_NAME    || "Hubot",
   path:        process.env.HUBOT_PATH    || ".",
 };
-
-const Parser = new OptParse.OptionParser(Switches);
-Parser.banner = "Usage hubot [options]";
-
-Parser.on("adapter", (opt, value) => Options.adapter = value);
-
-Parser.on("disable-httpd", opt => Options.enableHttpd = false);
-
-Parser.on("help", function(opt, value) {
-  console.log(Parser.toString());
-  return process.exit(0);
-});
-
-Parser.on("alias", function(opt, value) {
-  if (!value) { value = '/'; }
-  return Options.alias = value;
-});
-
-Parser.on("name", (opt, value) => Options.name = value);
-
-Parser.on("require", (opt, value) => Options.scripts.push(value));
-
-Parser.on((opt, value) => console.warn(`Unknown option: ${opt}`));
-
-Parser.parse(process.argv);
 
 if (process.platform !== "win32") {
   process.on('SIGTERM', () => process.exit(0));

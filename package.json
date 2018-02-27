@@ -1,6 +1,6 @@
 {
   "name": "hubot-entrypoint",
-  "version": "1.0.0",
+  "version": "1.0.0-alpha",
   "description": "",
   "main": "hubot.js",
   "scripts": {

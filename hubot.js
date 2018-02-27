@@ -109,6 +109,7 @@ module.exports = function (options = {}) {
         process.on('SIGTERM', () => process.exit(0))
       }
       robot.run()
+      return robot
     }
   }
 }

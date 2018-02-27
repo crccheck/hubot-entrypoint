@@ -1,6 +1,6 @@
 {
   "name": "hubot-entrypoint",
-  "version": "1.0.0-alpha",
+  "version": "1.0.0-alpha.3",
   "description": "Launch Hubot with require()",
   "main": "hubot.js",
   "scripts": {

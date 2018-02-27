@@ -18,7 +18,9 @@ const defaultOptions = {
   path:        process.env.HUBOT_PATH    || ".",
 };
 
-module.exports = function (options = defaultOptions) {
+module.exports = function (options = {}) {
+  options = {...defaultOptions, ...options};
+
   const robot = hubot.loadBot(undefined, options.adapter, options.enableHttpd, options.name, options.alias);
 
   const loadScripts = function() {

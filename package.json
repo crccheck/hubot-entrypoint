@@ -1,19 +1,26 @@
 {
   "name": "hubot-entrypoint",
   "version": "1.0.0-alpha",
-  "description": "",
+  "description": "Launch Hubot with require()",
   "main": "hubot.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
+  "keywords": ["hubot"],
   "author": "Chris Chang <c@crccheck.com> (http://crccheck.com/blog)",
   "license": "MIT",
   "dependencies": {
-    "app-root-dir": "^1.0.2",
     "coffee-script": "^1.12.7"
   },
   "devDependencies": {
     "hubot": "^2.19.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/crccheck/hubot-entrypoint.git"
+  },
+  "bugs": {
+    "url": "https://github.com/crccheck/hubot-entrypoint/issues"
+  },
+  "homepage": "https://github.com/crccheck/hubot-entrypoint#readme"
 }

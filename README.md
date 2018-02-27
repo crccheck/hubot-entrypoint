@@ -28,6 +28,7 @@ const hubotEntrypoint = require('hubot-entrypoint')
 
 const bot = hubotEntrypoint({
   adapter: 'slack',
+  name: 'Huboto',
 })
 
 bot.start()

@@ -1,16 +1,12 @@
 Hubot Entrypoint
 ================
 
-Start Hubot v2 with `require`.
+Start Hubot v3 with `require`.
+This should also work for Hubot v2,
+but if it doesn't use `npm install hubot-entrypoint@<2`
 
 Currently, the only way to start Hubot is from the command line. But there may
 be times you need to start Hubot from another Node script.
-
-This script was made by running [Decaffeinate] on the [Hubot
-CLI](https://github.com/hubotio/hubot/blob/v2.19.0/bin/hubot) CoffeeScript.
-I haven't checked how this would work with Hubot v3 yet.
-
-[decaffeinate]: https://github.com/decaffeinate/decaffeinate
 
 
 Quick start

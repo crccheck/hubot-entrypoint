@@ -10,7 +10,6 @@ const defaultOptions = {
   enableHttpd: process.env.HUBOT_HTTPD || true,
   scripts: process.env.HUBOT_SCRIPTS || [],
   name: process.env.HUBOT_NAME || 'Hubot',
-  path: process.env.HUBOT_PATH || '.',
 }
 
 module.exports = function (options = {}) {

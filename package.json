@@ -11,9 +11,7 @@
   ],
   "author": "Chris Chang <c@crccheck.com> (http://crccheck.com/blog)",
   "license": "MIT",
-  "dependencies": {
-    "coffee-script": "^1.12.7"
-  },
+  "dependencies": {},
   "devDependencies": {
     "hubot": "^3.1.1"
   },

@@ -1,8 +1,8 @@
 // Stripped down version of https://github.com/hubotio/hubot/blob/master/bin/hubot.js
-const fs       = require('fs');
+const fs = require('fs')
 const pathResolve = require('path').resolve
 
-const hubot    = require('hubot');
+const hubot = require('hubot')
 
 const defaultOptions = {
   adapter: process.env.HUBOT_ADAPTER || 'shell',

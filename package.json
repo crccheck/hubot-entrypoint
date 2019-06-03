@@ -9,7 +9,7 @@
   "keywords": [
     "hubot"
   ],
-  "author": "Chris Chang <c@crccheck.com> (http://crccheck.com/blog)",
+  "author": "Chris Chang <c@crccheck.com> (https://crccheck.com/blog)",
   "license": "MIT",
   "dependencies": {
     "coffee-script": "^1.12.7"

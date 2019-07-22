@@ -6,14 +6,14 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["hubot"],
+  "keywords": [
+    "hubot"
+  ],
   "author": "Chris Chang <c@crccheck.com> (http://crccheck.com/blog)",
   "license": "MIT",
-  "dependencies": {
-    "coffee-script": "^1.12.7"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "hubot": "^2.19.0"
+    "hubot": "^3.1.1"
   },
   "repository": {
     "type": "git",
